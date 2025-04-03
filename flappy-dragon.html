@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Dragon - Mario Style</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="score">0</div>
+        <div class="dragon">
+            <div class="dragon-eye"></div>
+            <div class="dragon-mouth"></div>
+            <div class="dragon-wing"></div>
+        </div>
+        <div class="clouds"></div>
+        <div class="ground"></div>
+        <div class="start-screen">
+            <h1>Flappy Dragon</h1>
+            <p>Nhấn nút hoặc phím Space để bắt đầu</p>
+            <button id="start-button">Bắt đầu</button>
+        </div>
+        <div class="game-over">
+            <h1>Game Over!</h1>
+            <p>Điểm của bạn: <span id="final-score">0</span></p>
+            <button id="restart-button">Chơi lại</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

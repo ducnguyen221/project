@@ -1,0 +1,262 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #5c94fc;
+    font-family: 'Super Mario', Arial, sans-serif;
+}
+
+.game-container {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    overflow: hidden;
+    border: 4px solid #333;
+    border-radius: 8px;
+    background-color: #5c94fc;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Dragon styling */
+.dragon {
+    position: absolute;
+    width: 50px;
+    height: 36px;
+    left: 50px;
+    background-color: #ff5533;
+    border-radius: 50% 60% 50% 40%;
+    transition: transform 0.1s;
+    z-index: 5;
+}
+
+.dragon-eye {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    border-radius: 50%;
+    top: 6px;
+    left: 10px;
+}
+
+.dragon-eye:after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: black;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+}
+
+.dragon-mouth {
+    position: absolute;
+    width: 14px;
+    height: 8px;
+    background-color: #af2c14;
+    border-radius: 0 50% 50% 0;
+    top: 20px;
+    left: 36px;
+}
+
+.dragon-wing {
+    position: absolute;
+    width: 20px;
+    height: 16px;
+    background-color: #ff7b4d;
+    border-radius: 50% 50% 0 50%;
+    top: 10px;
+    left: 6px;
+    transform: rotate(-20deg);
+}
+
+/* Mario style pipes */
+.pipe {
+    position: absolute;
+    width: 80px;
+    z-index: 4;
+}
+
+.pipe-top {
+    background: linear-gradient(to right, #006400, #00a000 20%, #00a000 80%, #006400);
+    border: 4px solid #004000;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.pipe-top:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 10px;
+    background-color: #00a000;
+    border: 4px solid #004000;
+    border-top: none;
+    bottom: 0;
+    left: -4px;
+}
+
+.pipe-bottom {
+    background: linear-gradient(to right, #006400, #00a000 20%, #00a000 80%, #006400);
+    border: 4px solid #004000;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+
+.pipe-bottom:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 10px;
+    background-color: #00a000;
+    border: 4px solid #004000;
+    border-bottom: none;
+    top: 0;
+    left: -4px;
+}
+
+/* Clouds in background */
+.clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.clouds:before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 40px;
+    top: 60px;
+    left: 60px;
+    animation: moveClouds 20s linear infinite;
+}
+
+.clouds:after {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 60px;
+    top: 160px;
+    left: 260px;
+    animation: moveClouds 30s linear infinite;
+}
+
+@keyframes moveClouds {
+    0% {
+        transform: translateX(400px);
+    }
+    100% {
+        transform: translateX(-150px);
+    }
+}
+
+/* Mario style ground */
+.ground {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background-color: #c84c0c;
+    border-top: 8px solid #8c2c00;
+    z-index: 6;
+}
+
+.ground:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background-image: 
+        linear-gradient(45deg, #e8b478 25%, transparent 25%),
+        linear-gradient(-45deg, #e8b478 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e8b478 75%),
+        linear-gradient(-45deg, transparent 75%, #e8b478 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.score {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 32px;
+    color: white;
+    font-weight: bold;
+    z-index: 10;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.start-screen, .game-over {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    z-index: 20;
+}
+
+.start-screen h1, .game-over h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-shadow: 3px 3px 0 #ff0000;
+}
+
+.start-screen p, .game-over p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    background-color: #ff0000;
+    color: white;
+    border: 4px solid #800000;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: #ff4d4d;
+    transform: scale(1.05);
+}
+
+.game-over {
+    display: none;
+}
+
+/* Mario-style animation for the dragon */
+@keyframes fly {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(-5deg);
+    }
+}
+
+.dragon.flying {
+    animation: fly 0.5s infinite;
+}
