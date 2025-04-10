@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Con Rồng</title>
+    <link rel="stylesheet" href="dragon_game_style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>Game Con Rồng</h1>
+            <div class="score-container">
+                <span>Điểm: </span>
+                <span id="score">0</span>
+            </div>
+        </div>
+        
+        <div id="game-board"></div>
+        
+        <div class="game-controls">
+            <button id="start-button">Bắt Đầu</button>
+            <button id="reset-button">Chơi Lại</button>
+        </div>
+        
+        <div class="game-instructions">
+            <h2>Hướng dẫn:</h2>
+            <p>Sử dụng các phím mũi tên ← ↑ → ↓ để di chuyển con rồng</p>
+            <p>Ăn trứng rồng để tăng điểm và độ dài</p>
+            <p>Tránh đụng vào tường hoặc thân rồng</p>
+        </div>
+    </div>
+    
+    <script src="dragon_game_script.js"></script>
+</body>
+</html>
