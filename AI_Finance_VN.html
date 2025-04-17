@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Top 10 Ứng Dụng AI trong Quản Lý Tài Chính và Đầu Tư năm 2025</title>
+<style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 30px;
+            background-color: #f4f6f8;
+        }
+
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .ranking-section {
+            flex: 1 1 45%;
+            min-width: 350px;
+        }
+
+        .trends-section {
+            flex: 1 1 45%;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .ranking-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .year-column {
+            flex: 1;
+        }
+
+        .year-title {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ranking-number {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background-color: #ddd;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .ranking-text {
+            color: #333;
+        }
+
+        #trendsChartCanvas {
+            width: 250px !important;
+            height: 250px !important;
+            margin-bottom: 15px;
+        }
+
+        .legend-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .note {
+            font-size: 0.8em;
+            color: #777;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="ranking-section section">
+<h2>So Sánh Thứ Hạng Các Ứng Dụng AI</h2>
+<div class="ranking-container">
+<div class="year-column">
+<h3 class="year-title">2024</h3>
+<ol class="ranking-list">
+<li class="ranking-item"><span class="ranking-number" style="background-color: #007bff;">1</span><span class="ranking-text">Phân tích dữ liệu tài chính</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #28a745;">2</span><span class="ranking-text">Tự động hóa báo cáo</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #6f42c1;">3</span><span class="ranking-text">Phát hiện gian lận</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #17a2b8;">4</span><span class="ranking-text">Phân tích rủi ro và tín dụng</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #dc3545;">5</span><span class="ranking-text">Giám sát thị trường</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #ffc107;">6</span><span class="ranking-text">Dự báo ngân sách và lên kế hoạch</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #fd7e14;">7</span><span class="ranking-text">Hỗ trợ tài chính bằng AI</span></li>
+</ol>
+</div>
+<div class="year-column">
+<h3 class="year-title">2025</h3>
+<ol class="ranking-list" start="1">
+<li class="ranking-item"><span class="ranking-number" style="background-color: #007bff;">1</span><span class="ranking-text">Chiến lược đầu tư cá nhân hóa</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #28a745;">2</span><span class="ranking-text">Tư vấn tài chính bằng AI</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #28a745;">3</span><span class="ranking-text">Tự động hóa báo cáo và kế toán</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #17a2b8;">4</span><span class="ranking-text">Tối ưu hóa danh mục đầu tư</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #6f42c1;">5</span><span class="ranking-text">Phân tích dữ liệu tài chính</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #ffc107;">6</span><span class="ranking-text">Phát hiện gian lận</span></li>
+<li class="ranking-item"><span class="ranking-number" style="background-color: #fd7e14;">7</span><span class="ranking-text">Phân tích rủi ro và tín dụng</span></li>
+</ol>
+</div>
+</div>
+</div>
+<div class="trends-section section">
+<h2>Các Xu Hướng AI Nổi Bật năm 2025</h2>
+<canvas id="trendsChartCanvas"></canvas>
+<div class="legend-container">
+<div class="legend-item"><span class="legend-color" style="background-color: #f44336;"></span><span>Cá nhân hóa tài chính (32%)</span></div>
+<div class="legend-item"><span class="legend-color" style="background-color: #2196f3;"></span><span>Tự động hóa quy trình kỹ thuật (23%)</span></div>
+<div class="legend-item"><span class="legend-color" style="background-color: #9e9e9e;"></span><span>Phát hiện rủi ro và gian lận (20%)</span></div>
+<div class="legend-item"><span class="legend-color" style="background-color: #4caf50;"></span><span>Tối ưu hóa quyết định (15%)</span></div>
+<div class="legend-item"><span class="legend-color" style="background-color: #ffeb3b;"></span><span>Hiểu biết thị trường (10%)</span></div>
+</div>
+<p class="note">* Không nằm trong top 10 năm trước | Nguồn: AI Financial</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<section style="margin-top: 40px; font-family: Arial, sans-serif; font-size: 15px;"><h2 style="color: #003366; margin-bottom: 20px;">📌 Ứng dụng AI trong các nghiệp vụ đầu tư</h2><div style="display: flex; align-items: flex-start;"><div style="flex: 1;"><table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; font-size: 14px;"><tr><th style="background-color: #f2f2f2; text-align: left; border: 1px solid #ccc;">Nghiệp vụ đầu tư</th><th style="background-color: #f2f2f2; text-align: left; border: 1px solid #ccc;">Ứng dụng AI hỗ trợ cụ thể</th><th style="background-color: #f2f2f2; text-align: left; border: 1px solid #ccc;">Công cụ gợi ý</th></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">📊 Đánh giá hiệu quả các công ty con</td><td style="border: 1px solid #ccc; vertical-align: top;">Phân tích báo cáo tài chính, dự đoán ROI, phân loại rủi ro</td><td style="border: 1px solid #ccc; vertical-align: top;">Power BI, GPT, Scikit-Learn</td></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">💰 Ra quyết định rót vốn</td><td style="border: 1px solid #ccc; vertical-align: top;">Xây mô hình ML xác suất sinh lời, scoring ưu tiên cấp vốn</td><td style="border: 1px solid #ccc; vertical-align: top;">XGBoost, Regression Model</td></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">📄 Phân tích yêu cầu đầu tư</td><td style="border: 1px solid #ccc; vertical-align: top;">ChatGPT tóm tắt hồ sơ đề xuất đầu tư, phân tích SWOT tự động</td><td style="border: 1px solid #ccc; vertical-align: top;">GPT-4, Claude</td></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">📈 Dự báo dòng tiền</td><td style="border: 1px solid #ccc; vertical-align: top;">Sử dụng AI để dự báo dòng tiền, nhu cầu vốn trong kỳ</td><td style="border: 1px solid #ccc; vertical-align: top;">Prophet, Azure ML</td></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">⚖️ So sánh danh mục đầu tư</td><td style="border: 1px solid #ccc; vertical-align: top;">Tự động tạo bảng so sánh hiệu suất các công ty con theo KPIs</td><td style="border: 1px solid #ccc; vertical-align: top;">Excel Copilot, Power BI</td></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">📊 Tự động hóa báo cáo đầu tư</td><td style="border: 1px solid #ccc; vertical-align: top;">Tạo báo cáo tổng hợp tự động theo tháng, quý</td><td style="border: 1px solid #ccc; vertical-align: top;">Power Automate, AI Copilot</td></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">🚨 Phát hiện bất thường</td><td style="border: 1px solid #ccc; vertical-align: top;">AI phát hiện số liệu rủi ro, sai lệch tăng trưởng đột biến</td><td style="border: 1px solid #ccc; vertical-align: top;">Anomaly Detection</td></tr><tr><td style="border: 1px solid #ccc; vertical-align: top;">📝 Phân tích văn bản hợp đồng</td><td style="border: 1px solid #ccc; vertical-align: top;">Trích xuất điều khoản chính từ hợp đồng góp vốn</td><td style="border: 1px solid #ccc; vertical-align: top;">Document AI, ChatGPT + plugin</td></tr></table></div><div style="float: right; width: 250px; margin-left: 20px; background: #f9f9f9; padding: 10px; border: 1px solid #ddd;"><h3 style="font-size: 16px; margin-bottom: 10px; color: #003366;">🔧 Công cụ AI tiêu biểu</h3><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">Power BI</span></div><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">GPT</span></div><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">Scikit-Learn</span></div><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://avatars.githubusercontent.com/u/119453252?s=200&amp;v=4" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">Claude</span></div><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Microsoft_Azure_Logo.svg" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">Azure ML</span></div><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://th.bing.com/th/id/OIP.6hpx3Mwy5HO85Nf6FvwGBQHaHa?rs=1&pid=ImgDetMain" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">Canva</span></div><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://images.ctfassets.net/un655fb9wln6/1k5wBPhbu5kXiaYlFWgEJE/b590772959bd510e64cf230ef37bba3e/Make-Logo-RGB.svg" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">Make</span></div><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><img src="https://logos-world.net/wp-content/uploads/2023/10/Microsoft-Copilot-Logo.png" style="height: 24px; width: 24px;"/><span style="font-size: 14px;">Copilot</span></div></div></div></section><script>
+const canvas = document.getElementById('trendsChartCanvas');
+const barChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+        labels: [
+            'Cá nhân hóa tài chính',
+            'Tự động hóa quy trình kỹ thuật',
+            'Phát hiện rủi ro và gian lận',
+            'Tối ưu hóa quyết định',
+            'Hiểu biết thị trường'
+        ],
+        datasets: [{
+            label: 'Tỷ lệ (%)',
+            data: [32, 23, 20, 15, 10],
+            backgroundColor: [
+                '#f44336',
+                '#2196f3',
+                '#9e9e9e',
+                '#4caf50',
+                '#ffeb3b'
+            ]
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + context.parsed.y + '%';
+                    }
+                }
+            }
+        },
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 40,
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Tỷ lệ (%)'
+                }
+            }
+        }
+    }
+});
+</script></body>
+</html>
