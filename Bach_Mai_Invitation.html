@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giấy Mời Giao Lưu - Trung tâm Hồi sức tích cực & Trung tâm Tiêu hoá Gan mật</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 50%, #81c784 100%);
+            min-height: 100vh;
+            padding: 10px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle background pattern */
+        body::before {
+            content: '⚽';
+            position: fixed;
+            top: 10%;
+            right: 5%;
+            font-size: 80px;
+            opacity: 0.05;
+            z-index: 1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '🏥';
+            position: fixed;
+            bottom: 10%;
+            left: 5%;
+            font-size: 70px;
+            opacity: 0.05;
+            z-index: 1;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .container {
+            max-width: 95%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" style="stop-color:white;stop-opacity:0.1"/><stop offset="100%" style="stop-color:white;stop-opacity:0"/></radialGradient></defs><rect width="100" height="20" fill="url(%23a)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .welcome-text {
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-weight: 500;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 15px;
+            border-left: 5px solid #4caf50;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+        }
+
+        .schedule-table th {
+            background: linear-gradient(135deg, #2e7d32, #388e3c);
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .schedule-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(76, 175, 80, 0.05);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+
+        .time-slot {
+            font-weight: bold;
+            color: #2e7d32;
+            font-size: 14px;
+            text-align: center;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            min-width: 100px;
+        }
+
+        .activity {
+            color: #333;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .activity strong {
+            color: #2e7d32;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .location {
+            color: #666;
+            font-style: italic;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            border-left: 3px solid #4caf50;
+            font-size: 13px;
+        }
+
+        .program-section {
+            background: rgba(76, 175, 80, 0.05);
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #4caf50;
+        }
+
+        .program-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .program-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4caf50;
+        }
+
+        .detail-item strong {
+            color: #2e7d32;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .closing-message {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(129, 199, 132, 0.1));
+            border-radius: 15px;
+            border: 2px dashed #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #37474f, #455a64);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .footer::before {
+            content: '📅 ';
+            margin-right: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #c8e6c8 0%, #81c784 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1b5e20;
+            font-weight: bold;
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                margin: 5px auto;
+                border-radius: 10px;
+                max-width: 98%;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .main-title {
+                font-size: 24px;
+                line-height: 1.2;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+                line-height: 1.3;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .welcome-text {
+                font-size: 16px;
+                padding: 15px;
+            }
+            
+            .program-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .schedule-table {
+                font-size: 12px;
+            }
+            
+            .schedule-table th,
+            .schedule-table td {
+                padding: 8px 6px;
+            }
+            
+            .activity {
+                font-size: 12px;
+            }
+            
+            .activity strong {
+                font-size: 13px;
+            }
+            
+            .location {
+                font-size: 12px;
+            }
+            
+            .logo {
+                width: 60px;
+                height: 60px;
+                top: 10px;
+                right: 15px;
+            }
+            
+            .program-title {
+                font-size: 18px;
+            }
+            
+            .closing-message {
+                font-size: 18px;
+                padding: 15px;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 20px;
+            }
+            
+            .subtitle {
+                font-size: 13px;
+            }
+            
+            .welcome-text {
+                font-size: 15px;
+            }
+            
+            .schedule-table {
+                font-size: 11px;
+            }
+            
+            .schedule-table th,
+            .schedule-table td {
+                padding: 6px 4px;
+            }
+            
+            .time-slot {
+                font-size: 12px;
+                min-width: 80px;
+            }
+            
+            .program-title {
+                font-size: 16px;
+                flex-direction: column;
+                text-align: center;
+                gap: 5px;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .print-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(46, 125, 50, 0.4);
+        }
+
+        @media print {
+            .print-btn { display: none; }
+            body { background: white; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/02/Logo-Benh-Vien-Bach-Mai-Wh.png" alt="Bach Mai Hospital Logo" onerror="handleLogoError(this);">
+            </div>
+            <h1 class="main-title">GIẤY MỜI GIAO LƯU</h1>
+            <p class="subtitle">Trung tâm Hồi sức tích cực & Trung tâm Tiêu hoá Gan mật</p>
+        </div>
+
+        <div class="content">
+            <div class="welcome-text">
+                Chúng tôi trân trọng kính mời Quý Thầy/Cô, Anh/Chị đến tham dự chương trình giao lưu thân mật giữa hai trung tâm.
+            </div>
+
+            <div class="program-section">
+                <div class="program-title">
+                    <span class="icon">⚽</span>
+                    Chương trình 1: Giao lưu bóng đá nam nữ
+                </div>
+                <div class="program-details">
+                    <div class="detail-item">
+                        <strong>🕔 Thời gian:</strong>
+                        17h00 - 18h40, Thứ Sáu 13/6/2025
+                    </div>
+                    <div class="detail-item">
+                        <strong>📌 Địa điểm:</strong>
+                        Sân bóng Đại học Y Hà Nội
+                    </div>
+                </div>
+            </div>
+
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Nội dung/Hoạt động</th>
+                        <th>Địa điểm + Nội dung chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="time-slot">17:00-17:10</td>
+                        <td class="activity">
+                            <strong>Làm dao hai trung tâm phát biểu giao lưu</strong>
+                        </td>
+                        <td class="location">Sân bóng Đại học Y Hà Nội</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">17:10-18:00</td>
+                        <td class="activity">
+                            <strong>Giao lưu bóng đá nam:</strong><br>
+                            - Sân 7 người<br>
+                            - 20 phút/hiệp
+                        </td>
+                        <td class="location">Sân bóng Đại học Y Hà Nội</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">18:00-18:40</td>
+                        <td class="activity">
+                            <strong>Giao lưu bóng đá nữ:</strong><br>
+                            - Sân 7 người<br>
+                            - 15 phút/hiệp
+                        </td>
+                        <td class="location">Sân bóng Đại học Y Hà Nội</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">18:40 - 19h</td>
+                        <td class="activity">
+                            <strong>Kết thúc giao lưu bóng đá</strong><br>
+                            Tặng hoa<br>
+                            Chụp ảnh (có Photobooth)<br>
+                            Trao cờ lưu niệm giao lưu
+                        </td>
+                        <td class="location">Sân bóng Đại học Y Hà Nội</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="program-section">
+                <div class="program-title">
+                    <span class="icon">🍽️</span>
+                    Chương trình 2: Ăn tối & Văn nghệ
+                </div>
+                <div class="program-details">
+                    <div class="detail-item">
+                        <strong>🕖 Thời gian:</strong>
+                        19h00 – 22h00
+                    </div>
+                    <div class="detail-item">
+                        <strong>📌 Địa điểm:</strong>
+                        Nhà hàng Bia Thượng Hải, 139 Giáp Nhất
+                    </div>
+                    <div class="detail-item">
+                        <strong>🎤 Văn nghệ:</strong>
+                        Karaoke giao lưu tại nhà hàng
+                    </div>
+                </div>
+            </div>
+
+            <div class="closing-message">
+                🎉 Rất mong sự hiện diện của Quý Thầy/Cô, Anh/Chị! 🎉
+            </div>
+        </div>
+
+        <div class="footer">
+            Thứ Sáu, 13/6/2025
+        </div>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ In/Lưu</button>
+
+    <script>
+        // Enhanced mobile optimization with improved error handling
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Optimize for mobile devices
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                }
+
+                // Add touch-friendly interactions with null checks
+                const tableRows = document.querySelectorAll('.schedule-table tr');
+                if (tableRows && tableRows.length > 0) {
+                    tableRows.forEach(row => {
+                        if (row && row.addEventListener) {
+                            row.addEventListener('touchstart', function() {
+                                if (this && this.style) {
+                                    this.style.background = 'rgba(76, 175, 80, 0.1)';
+                                }
+                            });
+                            
+                            row.addEventListener('touchend', function() {
+                                setTimeout(() => {
+                                    if (this && this.style) {
+                                        this.style.background = '';
+                                    }
+                                }, 200);
+                            });
+                        }
+                    });
+                }
+
+                // Mobile-friendly copy functionality with improved error handling
+                const detailItems = document.querySelectorAll('.detail-item');
+                if (detailItems && detailItems.length > 0) {
+                    detailItems.forEach(item => {
+                        if (item && item.addEventListener) {
+                            item.addEventListener('click', function() {
+                                const text = this.textContent;
+                                if (navigator.clipboard && text) {
+                                    navigator.clipboard.writeText(text).then(() => {
+                                        if (this && this.style) {
+                                            this.style.background = '#e8f5e8';
+                                            setTimeout(() => {
+                                                if (this && this.style) {
+                                                    this.style.background = 'white';
+                                                }
+                                            }, 1000);
+                                        }
+                                    }).catch(err => {
+                                        console.log('Copy failed:', err);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Smooth scroll animations optimized for mobile with better error handling
+                if (window.IntersectionObserver) {
+                    const observer = new IntersectionObserver(entries => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting && entry.target && entry.target.style) {
+                                entry.target.style.opacity = '1';
+                                entry.target.style.transform = 'translateY(0)';
+                            }
+                        });
+                    }, {
+                        threshold: 0.1,
+                        rootMargin: '50px'
+                    });
+
+                    const animatedElements = document.querySelectorAll('.program-section, .detail-item');
+                    if (animatedElements && animatedElements.length > 0) {
+                        animatedElements.forEach(el => {
+                            if (el && el.style) {
+                                el.style.opacity = '0';
+                                el.style.transform = 'translateY(20px)';
+                                el.style.transition = 'all 0.6s ease';
+                                observer.observe(el);
+                            }
+                        });
+                    }
+                }
+
+                // Mobile share functionality with better error handling
+                if (navigator.share && document.body) {
+                    const shareBtn = document.createElement('button');
+                    if (shareBtn) {
+                        shareBtn.innerHTML = '📤 Chia sẻ';
+                        shareBtn.className = 'print-btn';
+                        shareBtn.style.bottom = '80px';
+                        shareBtn.addEventListener('click', () => {
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: 'Giấy Mời Giao Lưu - Bach Mai Hospital',
+                                    text: 'Mời bạn tham dự chương trình giao lưu thân mật giữa hai trung tâm',
+                                    url: window.location.href
+                                }).catch(err => {
+                                    console.log('Share failed:', err);
+                                });
+                            }
+                        });
+                        document.body.appendChild(shareBtn);
+                    }
+                }
+            } catch (error) {
+                console.log('Script error:', error);
+            }
+        });
+
+        // Improved logo error handling function
+        function handleLogoError(img) {
+            try {
+                // Check if img exists and has necessary properties
+                if (!img) {
+                    console.log('Image element is null');
+                    return;
+                }
+
+                // Check if parentElement exists
+                if (!img.parentElement) {
+                    console.log('Parent element is null');
+                    return;
+                }
+
+                // Hide the broken image
+                if (img.style) {
+                    img.style.display = 'none';
+                }
+
+                // Replace with emoji and style the parent
+                const parent = img.parentElement;
+                if (parent) {
+                    parent.innerHTML = '🏥';
+                    
+                    // Check if parent has style property before using it
+                    if (parent.style) {
+                        parent.style.fontSize = '30px';
+                        parent.style.color = '#2e7d32';
+                        parent.style.display = 'flex';
+                        parent.style.alignItems = 'center';
+                        parent.style.justifyContent = 'center';
+                    }
+                }
+            } catch (error) {
+                console.log('Logo error handling failed:', error);
+                // Fallback: try to hide the image at minimum
+                try {
+                    if (img && img.style) {
+                        img.style.display = 'none';
+                    }
+                } catch (fallbackError) {
+                    console.log('Fallback error handling also failed:', fallbackError);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
