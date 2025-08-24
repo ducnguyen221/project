@@ -1,16 +1,16 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Vietnam → Destinations (Flags + Label Toggle)</title>
+<title>Vietnam → Destinations (Label Toggle + Icon Size Control)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   html, body, #map { height: 100%; margin: 0; }
   .panel {
-    position: absolute; top: 56px; right: 12px; width: 380px;
+    position: absolute; top: 56px; right: 12px; width: 400px;
     max-height: calc(100% - 68px); overflow: auto;
     background: rgba(255,255,255,0.96); border-radius: 12px; 
     box-shadow: 0 8px 30px rgba(0,0,0,.12); padding: 12px;
@@ -22,7 +22,7 @@
   .row { display: grid; grid-template-columns: 1.1fr 1.9fr; gap: 6px; align-items: center; margin-bottom: 6px; }
   .row label { font-size: 12px; font-weight: 600; color: #333; }
   .row input[type="text"] { width: 100%; font-size: 12px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 8px; }
-  .btnbar { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+  .btnbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
   button { padding: 8px 10px; border: 0; border-radius: 8px; background: #1e88e5; color: white; font-weight: 600; cursor: pointer; }
   button.secondary { background: #e0e0e0; color: #222; }
   .toggle {
@@ -30,13 +30,17 @@
     background: #1e88e5; color: #fff; border: 0; border-radius: 999px;
     padding: 10px 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 30px rgba(0,0,0,.15);
   }
-  .note { font-size: 12px; color: #555; margin-top: 8px; line-height: 1.3; }
+  .note { font-size: 12px; color: #555; line-height: 1.3; }
   .dest-label { color: #1e88e5; font-weight: 800; text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff; }
   .origin-label { color: #d32f2f; font-weight: 900; text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff; }
   .leaflet-tooltip { background: transparent; border: 0; box-shadow: none; }
   .flag-icon img { width: 28px; height: 28px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
-  /* Label toggle: when body has .labels-off, all Leaflet tooltips are hidden */
+  /* Label toggle: khi body có .labels-off thì ẩn tất cả tooltip */
   body.labels-off .leaflet-tooltip { display: none !important; }
+  /* Icon size control UI */
+  .size-ctl { display:flex; align-items:center; gap:8px; }
+  .size-ctl input[type="range"]{ flex:1; }
+  .size-ctl .num{ width:42px; text-align:right; font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body>
@@ -44,6 +48,13 @@
 <button id="togglePanel" class="toggle">Hide list ▴</button>
 <div class="panel" id="panel">
   <h2>Editable icons per country</h2>
+  <div class="row size-ctl">
+    <label>Kích thước icon</label>
+    <button id="minusBtn" class="secondary">−</button>
+    <input id="sizeRange" type="range" min="16" max="72" step="1" value="28"/>
+    <button id="plusBtn" class="">+</button>
+    <div class="num"><span id="sizeVal">28</span>px</div>
+  </div>
   <div id="inputs"></div>
   <div class="btnbar">
     <button id="applyBtn">Apply changes</button>
@@ -52,15 +63,16 @@
     <button id="toggleLabelsBtn" class="secondary">Hide labels</button>
   </div>
   <div class="note">
-    Prefilled with flag icons (icons8). Paste any image URL (PNG/SVG). Saved to <b>localStorage</b>.<br/>
-    This build adds a <b>Hide/Show labels</b> toggle.
+    - Thanh trượt/± sẽ tăng giảm kích thước TẤT CẢ icon đồng bộ và tự căn lại vị trí label phía trên.<br/>
+    - Thay đổi được lưu vào <b>localStorage</b> (mở lại vẫn giữ).
   </div>
   <textarea id="exportBox" style="width:100%;height:80px;margin-top:8px;display:none;"></textarea>
 </div>
 
 <script>
-  const STORAGE_KEY = "iconConfig_vn_routes_v1";
+  const STORAGE_KEY = "iconConfig_vn_routes_v3";
   const LABELS_KEY = "labelsHidden_v1";
+  const SIZE_KEY   = "iconSize_v1";
   const lineColor = "#1e88e5";
 
   // Origin (Vietnam) with flag
@@ -108,141 +120,153 @@
     { name: "United Arab Emirates", lat: 23.4241, lng: 53.8478, flag: "https://img.icons8.com/emoji/48/united-arab-emirates-emoji.png" }
   ];
 
-  // Initialize config to EXACT flags
-  let iconConfig = {};
-  iconConfig[origin.name] = origin.flag;
-  countries.forEach(c => iconConfig[c.name] = c.flag);
-  const savedRaw = localStorage.getItem(STORAGE_KEY);
-  if (savedRaw) {
-    try { Object.assign(iconConfig, JSON.parse(savedRaw)); } catch(_) {}
-  }
+  // Load configs
+  let iconConfig = {}; iconConfig[origin.name] = origin.flag; countries.forEach(c => iconConfig[c.name] = c.flag);
+  const savedCfg = localStorage.getItem(STORAGE_KEY); if(savedCfg){ try{ Object.assign(iconConfig, JSON.parse(savedCfg)); }catch(e){} }
+  let ICON_SIZE = parseInt(localStorage.getItem(SIZE_KEY) || "28", 10);
 
-  // Leaflet map (colored, no labels)
+  // Map
   const map = L.map('map', { zoomControl: true });
-  L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
-    { attribution: '&copy; OpenStreetMap & CARTO', maxZoom: 19 }
-  ).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+    { attribution: '&copy; OpenStreetMap & CARTO', maxZoom: 19 }).addTo(map);
 
-  // Helper: DivIcon with <img> + graceful fallback
-  function makeDivIcon(url) {
+  // Helpers
+  function makeDivIcon(url, size = ICON_SIZE) {
     const safe = (url || '').replace(/"/g, '&quot;');
-    const html = `<img src="${safe}" onerror="this.onerror=null; this.src='https://cdn0.iconfinder.com/data/icons/basic-14/614/43_-_Iocation-1024.png';" />`;
-    return L.divIcon({ html, className: 'flag-icon', iconSize: [28,28], iconAnchor: [14,28] });
+    const html = `<img style="width:${size}px;height:${size}px" src="${safe}" onerror="this.onerror=null; this.src='https://cdn0.iconfinder.com/data/icons/basic-14/614/43_-_Iocation-1024.png';" />`;
+    return L.divIcon({ html, className: 'flag-icon', iconSize: [size, size], iconAnchor: [size/2, size] });
   }
-
-  // Origin marker + red label above
-  const originMarker = L.marker([origin.lat, origin.lng], { icon: makeDivIcon(iconConfig[origin.name]) }).addTo(map);
-  originMarker.bindTooltip(origin.name, { permanent: true, direction: 'top', offset: [0, -28], className: 'origin-label' }).openTooltip();
 
   const markers = {};
   const bounds = L.latLngBounds([ [origin.lat, origin.lng] ]);
 
-  // Quad Bezier curve
+  // Origin
+  const originMarker = L.marker([origin.lat, origin.lng], { icon: makeDivIcon(iconConfig[origin.name]) }).addTo(map);
+  originMarker.bindTooltip(origin.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'origin-label' }).openTooltip();
+
+  // Curve
   function bezier(a, b, lift=0.16, steps=100) {
-    const mlat = (a[0] + b[0]) / 2, mlng = (a[1] + b[1]) / 2;
-    const dx = b[1] - a[1], dy = b[0] - a[0];
-    const len = Math.sqrt(dx*dx + dy*dy) + 1e-9;
-    const nx = -dy/len, ny = dx/len;
-    const k = lift * len;
-    const clat = mlat + ny*k, clng = mlng + nx*k;
-    const pts = [];
-    for (let i=0;i<=steps;i++) {
-      const t = i/steps;
-      const lat = (1-t)*(1-t)*a[0] + 2*(1-t)*t*clat + t*t*b[0];
-      const lng = (1-t)*(1-t)*a[1] + 2*(1-t)*t*clng + t*t*b[1];
-      pts.push([lat, lng]);
+    const mlat=(a[0]+b[0])/2, mlng=(a[1]+b[1])/2;
+    const dx=b[1]-a[1], dy=b[0]-a[0];
+    const len=Math.sqrt(dx*dx+dy*dy)+1e-9;
+    const nx=-dy/len, ny=dx/len;
+    const k=lift*len, clat=mlat+ny*k, clng=mlng+nx*k;
+    const pts=[];
+    for(let i=0;i<=steps;i++){
+      const t=i/steps;
+      const lat=(1-t)*(1-t)*a[0] + 2*(1-t)*t*clat + t*t*b[0];
+      const lng=(1-t)*(1-t)*a[1] + 2*(1-t)*t*clng + t*t*b[1];
+      pts.push([lat,lng]);
     }
     return pts;
   }
 
-  // Add countries and dashed curves
+  // Countries + lines
   countries.forEach(c => {
     const m = L.marker([c.lat, c.lng], { icon: makeDivIcon(iconConfig[c.name]) }).addTo(map);
-    m.bindTooltip(c.name, { permanent: true, direction: 'top', offset: [0, -28], className: 'dest-label' }).openTooltip();
-    markers[c.name] = m;
-    bounds.extend([c.lat, c.lng]);
+    m.bindTooltip(c.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'dest-label' }).openTooltip();
+    markers[c.name] = m; bounds.extend([c.lat, c.lng]);
     const pts = bezier([origin.lat, origin.lng], [c.lat, c.lng], 0.16, 120);
     L.polyline(pts, { color: "#1e88e5", weight: 2.3, opacity: 0.95, dashArray: "8,10" }).addTo(map);
   });
-
   map.fitBounds(bounds.pad(0.08));
 
-  // ------- Panel with toggle & editing -------
-  const PANEL_KEY = "panelCollapsed";
-  const panel = document.getElementById('panel');
-  const toggleBtn = document.getElementById('togglePanel');
+  // Panel toggle
+  const PANEL_KEY = "panelCollapsed_v3";
+  const panel = document.getElementById('panel'); const toggleBtn = document.getElementById('togglePanel');
   function setPanelState(collapsed) {
     if (collapsed) { panel.classList.add('hidden'); toggleBtn.textContent = "Show list ▾"; }
     else { panel.classList.remove('hidden'); toggleBtn.textContent = "Hide list ▴"; }
     localStorage.setItem(PANEL_KEY, collapsed ? "1" : "0");
   }
-  const wasCollapsed = localStorage.getItem(PANEL_KEY) === "1";
-  setPanelState(wasCollapsed);
+  setPanelState(localStorage.getItem(PANEL_KEY) === "1");
   toggleBtn.addEventListener('click', () => setPanelState(!panel.classList.contains('hidden')));
 
+  // Inputs for icons
   const inputsDiv = document.getElementById('inputs');
   function renderInputs() {
     inputsDiv.innerHTML = '';
-    // Vietnam first
-    const vnRow = document.createElement('div'); vnRow.className = 'row';
-    const vnLabel = document.createElement('label'); vnLabel.textContent = origin.name;
-    const vnInput = document.createElement('input'); vnInput.type = 'text'; vnInput.value = iconConfig[origin.name];
-    vnInput.id = 'input-' + origin.name.replace(/\s+/g,'_');
-    vnRow.appendChild(vnLabel); vnRow.appendChild(vnInput); inputsDiv.appendChild(vnRow);
-    // Countries
+    const vnRow = document.createElement('div'); vnRow.className='row';
+    vnRow.innerHTML = `<label>${origin.name}</label><input type="text" id="input-${origin.name.replace(/\s+/g,'_')}" value="${iconConfig[origin.name]}"/>`;
+    inputsDiv.appendChild(vnRow);
     countries.forEach(c => {
-      const row = document.createElement('div'); row.className = 'row';
-      const label = document.createElement('label'); label.textContent = c.name;
-      const input = document.createElement('input'); input.type = 'text';
-      input.value = iconConfig[c.name] || c.flag;
-      input.id = 'input-' + c.name.replace(/\s+/g,'_');
-      row.appendChild(label); row.appendChild(input); inputsDiv.appendChild(row);
+      const row = document.createElement('div'); row.className='row';
+      row.innerHTML = `<label>${c.name}</label><input type="text" id="input-${c.name.replace(/\s+/g,'_')}" value="${iconConfig[c.name]}"/>`;
+      inputsDiv.appendChild(row);
     });
   }
   renderInputs();
 
-  function applyChanges() {
-    // Vietnam
+  function applyChanges(){
+    // VN
     let id = 'input-' + origin.name.replace(/\s+/g,'_');
     let val = document.getElementById(id).value.trim() || origin.flag;
     iconConfig[origin.name] = val;
-    originMarker.setIcon(makeDivIcon(val));
-
+    originMarker.setIcon(makeDivIcon(val, ICON_SIZE));
+    originMarker.unbindTooltip(); originMarker.bindTooltip(origin.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'origin-label' }).openTooltip();
     // Countries
     countries.forEach(c => {
       const id = 'input-' + c.name.replace(/\s+/g,'_');
       const val = document.getElementById(id).value.trim() || c.flag;
       iconConfig[c.name] = val;
-      markers[c.name].setIcon(makeDivIcon(val));
+      const mk = markers[c.name];
+      mk.setIcon(makeDivIcon(val, ICON_SIZE));
+      mk.unbindTooltip(); mk.bindTooltip(c.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'dest-label' }).openTooltip();
     });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(iconConfig));
   }
 
-  function resetConfig() {
-    iconConfig = {}; iconConfig[origin.name] = origin.flag;
-    countries.forEach(c => iconConfig[c.name] = c.flag);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(iconConfig));
+  function resetConfig(){
+    iconConfig = {}; iconConfig[origin.name] = origin.flag; countries.forEach(c => iconConfig[c.name] = c.flag);
     renderInputs(); applyChanges();
   }
 
   document.getElementById('applyBtn').onclick = applyChanges;
   document.getElementById('resetBtn').onclick = resetConfig;
   document.getElementById('exportBtn').onclick = () => {
-    const box = document.getElementById('exportBox'); box.style.display = 'block';
+    const box = document.getElementById('exportBox'); box.style.display='block';
     box.value = JSON.stringify(iconConfig, null, 2); box.select();
   };
 
-  // ------- Text label toggle -------
+  // Label toggle
   const toggleLabelsBtn = document.getElementById('toggleLabelsBtn');
   function setLabelsHidden(hidden) {
     document.body.classList.toggle('labels-off', hidden);
     toggleLabelsBtn.textContent = hidden ? 'Show labels' : 'Hide labels';
     localStorage.setItem(LABELS_KEY, hidden ? '1' : '0');
   }
-  const labelsHidden = localStorage.getItem(LABELS_KEY) === '1';
-  setLabelsHidden(labelsHidden);
+  setLabelsHidden(localStorage.getItem(LABELS_KEY) === '1');
   toggleLabelsBtn.addEventListener('click', () => setLabelsHidden(!document.body.classList.contains('labels-off')));
+
+  // ----- ICON SIZE CONTROL (global, synced) -----
+  const sizeRange = document.getElementById('sizeRange');
+  const sizeVal   = document.getElementById('sizeVal');
+  const minusBtn  = document.getElementById('minusBtn');
+  const plusBtn   = document.getElementById('plusBtn');
+
+  // init from saved
+  sizeRange.value = String(ICON_SIZE);
+  sizeVal.textContent = String(ICON_SIZE);
+
+  function applyIconSize(size){
+    ICON_SIZE = Math.max(16, Math.min(72, Math.round(size)));
+    sizeRange.value = String(ICON_SIZE);
+    sizeVal.textContent = String(ICON_SIZE);
+    localStorage.setItem(SIZE_KEY, String(ICON_SIZE));
+    // Rebuild all icons & relocate labels (offset = -ICON_SIZE)
+    originMarker.setIcon(makeDivIcon(iconConfig[origin.name], ICON_SIZE));
+    originMarker.unbindTooltip(); originMarker.bindTooltip(origin.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'origin-label' }).openTooltip();
+    countries.forEach(c => {
+      const mk = markers[c.name];
+      mk.setIcon(makeDivIcon(iconConfig[c.name], ICON_SIZE));
+      mk.unbindTooltip(); mk.bindTooltip(c.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'dest-label' }).openTooltip();
+    });
+  }
+
+  sizeRange.addEventListener('input', e => applyIconSize(parseInt(e.target.value,10)));
+  minusBtn.addEventListener('click', () => applyIconSize(ICON_SIZE - 2));
+  plusBtn.addEventListener('click',  () => applyIconSize(ICON_SIZE + 2));
+
 </script>
 </body>
 </html>
