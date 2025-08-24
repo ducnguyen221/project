@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Vietnam → Destinations (Flags Correct, Top Labels)</title>
+<title>Vietnam → Destinations (Flags + Label Toggle)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -35,6 +35,8 @@
   .origin-label { color: #d32f2f; font-weight: 900; text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff; }
   .leaflet-tooltip { background: transparent; border: 0; box-shadow: none; }
   .flag-icon img { width: 28px; height: 28px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+  /* Label toggle: when body has .labels-off, all Leaflet tooltips are hidden */
+  body.labels-off .leaflet-tooltip { display: none !important; }
 </style>
 </head>
 <body>
@@ -47,22 +49,24 @@
     <button id="applyBtn">Apply changes</button>
     <button id="resetBtn" class="secondary">Reset</button>
     <button id="exportBtn" class="secondary">Export JSON</button>
+    <button id="toggleLabelsBtn" class="secondary">Hide labels</button>
   </div>
   <div class="note">
     Prefilled with flag icons (icons8). Paste any image URL (PNG/SVG). Saved to <b>localStorage</b>.<br/>
-    This build uses a new storage key to avoid stale configs.
+    This build adds a <b>Hide/Show labels</b> toggle.
   </div>
   <textarea id="exportBox" style="width:100%;height:80px;margin-top:8px;display:none;"></textarea>
 </div>
 
 <script>
-  const STORAGE_KEY = "iconConfig_vn_routes_v1"; // new key to avoid old saved values
+  const STORAGE_KEY = "iconConfig_vn_routes_v1";
+  const LABELS_KEY = "labelsHidden_v1";
   const lineColor = "#1e88e5";
 
   // Origin (Vietnam) with flag
   const origin = { name: "Vietnam", lat: 14.0583, lng: 108.2772, flag: "https://img.icons8.com/emoji/48/vietnam-emoji.png" };
 
-  // Countries with flags (provided)
+  // Countries with flags
   const countries = [
     { name: "Australia", lat: -25.2744, lng: 133.7751, flag: "https://img.icons8.com/emoji/48/australia-emoji.png" },
     { name: "Belarus", lat: 53.7098, lng: 27.9534, flag: "https://img.icons8.com/emoji/48/belarus-emoji.png" },
@@ -86,7 +90,7 @@
     { name: "Luxembourg", lat: 49.8153, lng: 6.1296, flag: "https://img.icons8.com/emoji/48/luxembourg-emoji.png" },
     { name: "Malaysia", lat: 4.2105, lng: 101.9758, flag: "https://img.icons8.com/emoji/48/malaysia-emoji.png" },
     { name: "Mozambique", lat: -18.6657, lng: 35.5296, flag: "https://img.icons8.com/emoji/48/mozambique-emoji.png" },
-    { name: "Myanmar", lat: 21.9162, lng: 95.9560, flag: "https://img.icons8.com/emoji/48/myanmar-emoji.png" },
+    { name: "Myanmar", lat: 21.9162, lng: 95.9560, flag: "https://img.icons8.com/emoji/48/myanmar-burma-emoji.png" },
     { name: "Netherlands", lat: 52.1326, lng: 5.2913, flag: "https://img.icons8.com/emoji/48/netherlands-emoji.png" },
     { name: "North Korea", lat: 40.3399, lng: 127.5101, flag: "https://img.icons8.com/emoji/48/north-korea-emoji.png" },
     { name: "South Korea", lat: 35.9078, lng: 127.7669, flag: "https://img.icons8.com/emoji/48/south-korea-emoji.png" },
@@ -104,17 +108,13 @@
     { name: "United Arab Emirates", lat: 23.4241, lng: 53.8478, flag: "https://img.icons8.com/emoji/48/united-arab-emirates-emoji.png" }
   ];
 
-  // Initialize config to EXACT flags (new key avoids old stale values)
+  // Initialize config to EXACT flags
   let iconConfig = {};
   iconConfig[origin.name] = origin.flag;
   countries.forEach(c => iconConfig[c.name] = c.flag);
-  // Try to merge previously saved values for this new key (if any)
   const savedRaw = localStorage.getItem(STORAGE_KEY);
   if (savedRaw) {
-    try {
-      const saved = JSON.parse(savedRaw);
-      Object.keys(saved).forEach(k => { iconConfig[k] = saved[k] || iconConfig[k]; });
-    } catch(_) {}
+    try { Object.assign(iconConfig, JSON.parse(savedRaw)); } catch(_) {}
   }
 
   // Leaflet map (colored, no labels)
@@ -232,6 +232,17 @@
     const box = document.getElementById('exportBox'); box.style.display = 'block';
     box.value = JSON.stringify(iconConfig, null, 2); box.select();
   };
+
+  // ------- Text label toggle -------
+  const toggleLabelsBtn = document.getElementById('toggleLabelsBtn');
+  function setLabelsHidden(hidden) {
+    document.body.classList.toggle('labels-off', hidden);
+    toggleLabelsBtn.textContent = hidden ? 'Show labels' : 'Hide labels';
+    localStorage.setItem(LABELS_KEY, hidden ? '1' : '0');
+  }
+  const labelsHidden = localStorage.getItem(LABELS_KEY) === '1';
+  setLabelsHidden(labelsHidden);
+  toggleLabelsBtn.addEventListener('click', () => setLabelsHidden(!document.body.classList.contains('labels-off')));
 </script>
 </body>
 </html>
