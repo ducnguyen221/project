@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -11,7 +10,7 @@
   html, body, #map { height: 100%; margin: 0; }
   .panel {
     position: absolute; top: 56px; right: 12px; width: 400px;
-    max-height: calc(100% - 68px); overflow: auto;
+    max-height: calc(100% - 68px); overflow-y:auto; overflow-x:hidden;
     background: rgba(255,255,255,0.96); border-radius: 12px; 
     box-shadow: 0 8px 30px rgba(0,0,0,.12); padding: 12px;
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -45,9 +44,19 @@
   /* Label toggle: khi body có .labels-off thì ẩn tất cả tooltip */
   body.labels-off .leaflet-tooltip { display: none !important; }
   /* Icon size control UI */
-  .size-ctl { display:flex; align-items:center; gap:8px; }
-  .size-ctl input[type="range"]{ flex:1; }
-  .size-ctl .num{ width:42px; text-align:right; font-variant-numeric: tabular-nums; }
+  .size-ctl{
+  display:grid;
+  grid-template-columns: 120px 36px 1fr 36px 56px;
+  gap:8px;
+  align-items:center;
+}
+.size-ctl label{ white-space:normal; line-height:1.15; font-size:12px; font-weight:600; color:#333; }
+.size-ctl button{ width:36px; height:32px; padding:0; border-radius:8px; }
+.size-ctl input[type="range"]{ width:100%; min-width:0; }
+.size-ctl .num{ width:56px; text-align:right; font-variant-numeric: tabular-nums;
+  border-left:1px solid #d0d0d0; padding-left:10px; }
+  .size-ctl input[type="range"]{ width:100%; min-width:0; }
+  .size-ctl .num{ width:56px; text-align:right; font-variant-numeric: tabular-nums; border-left:1px solid #d0d0d0; padding-left:10px; }
 </style>
 </head>
 <body>
@@ -58,24 +67,23 @@
   <div class="row size-ctl">
     <label>Kích thước Vietnam</label>
     <button id="minusBtnVN" class="secondary">−</button>
-    <input id="sizeRangeVN" type="range" min="16" max="96" step="1" value="34"/>
+    <input id="sizeRangeVN" type="range" min="16" max="96" step="1" value="60"/>
     <button id="plusBtnVN" class="">+</button>
-    <div class="num"><span id="sizeValVN">34</span>px</div>
+    <div class="num"><span id="sizeValVN">60</span>px</div>
+</div>
 <div class="row size-ctl">
     <label>Kích thước icon</label>
     <button id="minusBtn" class="secondary">−</button>
-    <input id="sizeRange" type="range" min="16" max="72" step="1" value="28"/>
+    <input id="sizeRange" type="range" min="16" max="72" step="1" value="38"/>
     <button id="plusBtn" class="">+</button>
-    <div class="num"><span id="sizeVal">28</span>px</div>
-
+    <div class="num"><span id="sizeVal">38</span>px</div>
   </div>
-  </div>
+<div class="btnbar" id="labelsBar"><button id="toggleLabelsBtn" class="secondary">Show labels</button></div>
   <div id="inputs"></div>
   <div class="btnbar">
     <button id="applyBtn">Apply changes</button>
     <button id="resetBtn" class="secondary">Reset</button>
     <button id="exportBtn" class="secondary">Export JSON</button>
-    <button id="toggleLabelsBtn" class="secondary">Hide labels</button>
   </div>
   <div class="note">
     - Thanh trượt/± sẽ tăng giảm kích thước TẤT CẢ icon đồng bộ và tự căn lại vị trí label phía trên.<br/>
@@ -142,8 +150,8 @@
   // Load configs
   let iconConfig = {}; iconConfig[origin.name] = origin.flag; countries.forEach(c => iconConfig[c.name] = c.flag);
   const savedCfg = localStorage.getItem(STORAGE_KEY); if(savedCfg){ try{ Object.assign(iconConfig, JSON.parse(savedCfg)); }catch(e){} }
-  let ICON_SIZE = parseInt(localStorage.getItem(SIZE_KEY) || "28", 10);
-  let VN_SIZE = parseInt(localStorage.getItem(VN_SIZE_KEY) || String(Math.max(ICON_SIZE, 32)), 10);
+  let ICON_SIZE = parseInt(localStorage.getItem(SIZE_KEY) || "38", 10);
+  let VN_SIZE = parseInt(localStorage.getItem(VN_SIZE_KEY) || "60", 10);
 
   // Map
   const map = L.map('map', {
