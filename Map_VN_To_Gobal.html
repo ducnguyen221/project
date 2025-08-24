@@ -34,7 +34,14 @@
   .dest-label { color: #1e88e5; font-weight: 800; text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff; }
   .origin-label { color: #d32f2f; font-weight: 900; text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff; }
   .leaflet-tooltip { background: transparent; border: 0; box-shadow: none; }
-  .flag-icon img { width: 28px; height: 28px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+  .flag-icon img {
+  width: 28px; height: 28px;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  filter: none !important;
+}
   /* Label toggle: khi body có .labels-off thì ẩn tất cả tooltip */
   body.labels-off .leaflet-tooltip { display: none !important; }
   /* Icon size control UI */
@@ -49,11 +56,19 @@
 <div class="panel" id="panel">
   <h2>Editable icons per country</h2>
   <div class="row size-ctl">
+    <label>Kích thước Vietnam</label>
+    <button id="minusBtnVN" class="secondary">−</button>
+    <input id="sizeRangeVN" type="range" min="16" max="96" step="1" value="34"/>
+    <button id="plusBtnVN" class="">+</button>
+    <div class="num"><span id="sizeValVN">34</span>px</div>
+<div class="row size-ctl">
     <label>Kích thước icon</label>
     <button id="minusBtn" class="secondary">−</button>
     <input id="sizeRange" type="range" min="16" max="72" step="1" value="28"/>
     <button id="plusBtn" class="">+</button>
     <div class="num"><span id="sizeVal">28</span>px</div>
+
+  </div>
   </div>
   <div id="inputs"></div>
   <div class="btnbar">
@@ -73,10 +88,11 @@
   const STORAGE_KEY = "iconConfig_vn_routes_v3";
   const LABELS_KEY = "labelsHidden_v1";
   const SIZE_KEY   = "iconSize_v1";
+  const VN_SIZE_KEY = "iconSizeVN_v1";
   const lineColor = "#1e88e5";
 
   // Origin (Vietnam) with flag
-  const origin = { name: "Vietnam", lat: 14.0583, lng: 108.2772, flag: "https://img.icons8.com/emoji/48/vietnam-emoji.png" };
+  const origin = { name: "Vietnam", lat: 14.0583, lng: 108.2772, flag: "https://cdn-icons-png.flaticon.com/512/202/202939.png" };
 
   // Countries with flags
   const countries = [
@@ -91,7 +107,7 @@
     { name: "Finland", lat: 61.9241, lng: 25.7482, flag: "https://img.icons8.com/emoji/48/finland-emoji.png" },
     { name: "France", lat: 46.2276, lng: 2.2137, flag: "https://img.icons8.com/emoji/48/france-emoji.png" },
     { name: "Germany", lat: 51.1657, lng: 10.4515, flag: "https://img.icons8.com/emoji/48/germany-emoji.png" },
-    { name: "Hong Kong", lat: 22.3193, lng: 114.1694, flag: "https://img.icons8.com/emoji/48/hong-kong-sar-china-emoji.png" },
+    { name: "Hong Kong, China", lat: 22.3193, lng: 114.1694, flag: "https://img.icons8.com/emoji/48/hong-kong-sar-china-emoji.png" },
     { name: "Hungary", lat: 47.1625, lng: 19.5033, flag: "https://img.icons8.com/emoji/48/hungary-emoji.png" },
     { name: "India", lat: 20.5937, lng: 78.9629, flag: "https://img.icons8.com/emoji/48/india-emoji.png" },
     { name: "Indonesia", lat: -0.7893, lng: 113.9213, flag: "https://img.icons8.com/emoji/48/indonesia-emoji.png" },
@@ -104,7 +120,7 @@
     { name: "Mozambique", lat: -18.6657, lng: 35.5296, flag: "https://img.icons8.com/emoji/48/mozambique-emoji.png" },
     { name: "Myanmar", lat: 21.9162, lng: 95.9560, flag: "https://img.icons8.com/emoji/48/myanmar-burma-emoji.png" },
     { name: "Netherlands", lat: 52.1326, lng: 5.2913, flag: "https://img.icons8.com/emoji/48/netherlands-emoji.png" },
-    { name: "North Korea", lat: 40.3399, lng: 127.5101, flag: "https://img.icons8.com/emoji/48/north-korea-emoji.png" },
+    { name: "DPRK", lat: 40.3399, lng: 127.5101, flag: "https://img.icons8.com/emoji/48/north-korea-emoji.png" },
     { name: "South Korea", lat: 35.9078, lng: 127.7669, flag: "https://img.icons8.com/emoji/48/south-korea-emoji.png" },
     { name: "Philippines", lat: 12.8797, lng: 121.7740, flag: "https://img.icons8.com/emoji/48/philippines-emoji.png" },
     { name: "Pakistan", lat: 30.3753, lng: 69.3451, flag: "https://img.icons8.com/emoji/48/pakistan-emoji.png" },
@@ -115,20 +131,33 @@
     { name: "Singapore", lat: 1.3521, lng: 103.8198, flag: "https://img.icons8.com/emoji/48/singapore-emoji.png" },
     { name: "Sweden", lat: 60.1282, lng: 18.6435, flag: "https://img.icons8.com/emoji/48/sweden-emoji.png" },
     { name: "Switzerland", lat: 46.8182, lng: 8.2275, flag: "https://img.icons8.com/emoji/48/switzerland-emoji.png" },
-    { name: "Taiwan", lat: 23.6978, lng: 120.9605, flag: "https://img.icons8.com/emoji/48/taiwan-emoji.png" },
+    { name: "Taipei, China", lat: 23.6978, lng: 120.9605, flag: "https://img.icons8.com/emoji/48/taiwan-emoji.png" },
     { name: "Thailand", lat: 15.8700, lng: 100.9925, flag: "https://img.icons8.com/emoji/48/thailand-emoji.png" },
-    { name: "United Arab Emirates", lat: 23.4241, lng: 53.8478, flag: "https://img.icons8.com/emoji/48/united-arab-emirates-emoji.png" }
+    { name: "United Arab Emirates", lat: 23.4241, lng: 53.8478, flag: "https://img.icons8.com/emoji/48/united-arab-emirates-emoji.png" },
+    { name: "United Kingdom", lat: 55.3781, lng: -3.4360, flag: "https://img.icons8.com/emoji/48/united-kingdom-emoji.png" },
+    { name: "Ukraine",        lat: 48.3794, lng: 31.1656, flag: "https://img.icons8.com/emoji/48/ukraine-emoji.png" },
+    { name: "United States",  lat: 37.0902, lng: -95.7129, flag: "https://img.icons8.com/emoji/48/united-states-emoji.png" },
   ];
 
   // Load configs
   let iconConfig = {}; iconConfig[origin.name] = origin.flag; countries.forEach(c => iconConfig[c.name] = c.flag);
   const savedCfg = localStorage.getItem(STORAGE_KEY); if(savedCfg){ try{ Object.assign(iconConfig, JSON.parse(savedCfg)); }catch(e){} }
   let ICON_SIZE = parseInt(localStorage.getItem(SIZE_KEY) || "28", 10);
+  let VN_SIZE = parseInt(localStorage.getItem(VN_SIZE_KEY) || String(Math.max(ICON_SIZE, 32)), 10);
 
   // Map
-  const map = L.map('map', { zoomControl: true });
+  const map = L.map('map', {
+  zoomControl: true,
+  zoomSnap: 0.25,   // allow fractional zoom levels (¼ steps)
+  zoomDelta: 0.25,  // +/- buttons & keyboard zoom by 0.25
+  wheelPxPerZoomLevel: 120 // optional: smoother mouse-wheel zoom
+});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
     { attribution: '&copy; OpenStreetMap & CARTO', maxZoom: 19 }).addTo(map);
+
+  // Create a dedicated top pane for Vietnam marker so it always stacks above others
+  map.createPane('vnPane');
+  map.getPane('vnPane').style.zIndex = 700; // markerPane default is 600
 
   // Helpers
   function makeDivIcon(url, size = ICON_SIZE) {
@@ -141,8 +170,12 @@
   const bounds = L.latLngBounds([ [origin.lat, origin.lng] ]);
 
   // Origin
-  const originMarker = L.marker([origin.lat, origin.lng], { icon: makeDivIcon(iconConfig[origin.name]) }).addTo(map);
-  originMarker.bindTooltip(origin.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'origin-label' }).openTooltip();
+  const originMarker = L.marker([origin.lat, origin.lng], { icon: makeDivIcon(iconConfig[origin.name], VN_SIZE), pane: 'vnPane', zIndexOffset: 10000 }).addTo(map);
+
+  // Create a dedicated top pane for Vietnam marker so it always stacks above others
+  map.createPane('vnPane');
+  map.getPane('vnPane').style.zIndex = 700; // markerPane default is 600
+  originMarker.bindTooltip(origin.name, { permanent:true, direction:'bottom', offset:[0, VN_SIZE], className:'origin-label' }).openTooltip();
 
   // Curve
   function bezier(a, b, lift=0.16, steps=100) {
@@ -164,10 +197,18 @@
   // Countries + lines
   countries.forEach(c => {
     const m = L.marker([c.lat, c.lng], { icon: makeDivIcon(iconConfig[c.name]) }).addTo(map);
-    m.bindTooltip(c.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'dest-label' }).openTooltip();
+
+  // Create a dedicated top pane for Vietnam marker so it always stacks above others
+  map.createPane('vnPane');
+  map.getPane('vnPane').style.zIndex = 700; // markerPane default is 600
+    m.bindTooltip(c.name, { permanent:true, direction:'bottom', offset:[0, ICON_SIZE], className:'dest-label' }).openTooltip();
     markers[c.name] = m; bounds.extend([c.lat, c.lng]);
     const pts = bezier([origin.lat, origin.lng], [c.lat, c.lng], 0.16, 120);
     L.polyline(pts, { color: "#1e88e5", weight: 2.3, opacity: 0.95, dashArray: "8,10" }).addTo(map);
+
+  // Create a dedicated top pane for Vietnam marker so it always stacks above others
+  map.createPane('vnPane');
+  map.getPane('vnPane').style.zIndex = 700; // markerPane default is 600
   });
   map.fitBounds(bounds.pad(0.08));
 
@@ -202,8 +243,8 @@
     let id = 'input-' + origin.name.replace(/\s+/g,'_');
     let val = document.getElementById(id).value.trim() || origin.flag;
     iconConfig[origin.name] = val;
-    originMarker.setIcon(makeDivIcon(val, ICON_SIZE));
-    originMarker.unbindTooltip(); originMarker.bindTooltip(origin.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'origin-label' }).openTooltip();
+    originMarker.setIcon(makeDivIcon(val, VN_SIZE));
+    originMarker.unbindTooltip(); originMarker.bindTooltip(origin.name, { permanent:true, direction:'bottom', offset:[0, VN_SIZE], className:'origin-label' }).openTooltip();
     // Countries
     countries.forEach(c => {
       const id = 'input-' + c.name.replace(/\s+/g,'_');
@@ -211,7 +252,7 @@
       iconConfig[c.name] = val;
       const mk = markers[c.name];
       mk.setIcon(makeDivIcon(val, ICON_SIZE));
-      mk.unbindTooltip(); mk.bindTooltip(c.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'dest-label' }).openTooltip();
+      mk.unbindTooltip(); mk.bindTooltip(c.name, { permanent:true, direction:'bottom', offset:[0, ICON_SIZE], className:'dest-label' }).openTooltip();
     });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(iconConfig));
   }
@@ -254,18 +295,43 @@
     sizeVal.textContent = String(ICON_SIZE);
     localStorage.setItem(SIZE_KEY, String(ICON_SIZE));
     // Rebuild all icons & relocate labels (offset = -ICON_SIZE)
-    originMarker.setIcon(makeDivIcon(iconConfig[origin.name], ICON_SIZE));
-    originMarker.unbindTooltip(); originMarker.bindTooltip(origin.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'origin-label' }).openTooltip();
+    originMarker.setIcon(makeDivIcon(iconConfig[origin.name], VN_SIZE));
+    originMarker.unbindTooltip(); originMarker.bindTooltip(origin.name, { permanent:true, direction:'bottom', offset:[0, VN_SIZE], className:'origin-label' }).openTooltip();
     countries.forEach(c => {
       const mk = markers[c.name];
       mk.setIcon(makeDivIcon(iconConfig[c.name], ICON_SIZE));
-      mk.unbindTooltip(); mk.bindTooltip(c.name, { permanent:true, direction:'top', offset:[0, -ICON_SIZE], className:'dest-label' }).openTooltip();
+      mk.unbindTooltip(); mk.bindTooltip(c.name, { permanent:true, direction:'bottom', offset:[0, ICON_SIZE], className:'dest-label' }).openTooltip();
     });
   }
 
   sizeRange.addEventListener('input', e => applyIconSize(parseInt(e.target.value,10)));
   minusBtn.addEventListener('click', () => applyIconSize(ICON_SIZE - 2));
   plusBtn.addEventListener('click',  () => applyIconSize(ICON_SIZE + 2));
+
+
+  // ----- VIETNAM ICON SIZE CONTROL (independent) -----
+  const sizeRangeVN = document.getElementById('sizeRangeVN');
+  const sizeValVN   = document.getElementById('sizeValVN');
+  const minusBtnVN  = document.getElementById('minusBtnVN');
+  const plusBtnVN   = document.getElementById('plusBtnVN');
+
+  // init from saved
+  sizeRangeVN.value = String(VN_SIZE);
+  sizeValVN.textContent = String(VN_SIZE);
+
+  function applyVNIconSize(size){
+    VN_SIZE = Math.max(16, Math.min(96, Math.round(size)));
+    sizeRangeVN.value = String(VN_SIZE);
+    sizeValVN.textContent = String(VN_SIZE);
+    localStorage.setItem(VN_SIZE_KEY, String(VN_SIZE));
+    originMarker.setIcon(makeDivIcon(iconConfig[origin.name], VN_SIZE));
+    originMarker.unbindTooltip(); originMarker.bindTooltip(origin.name, { permanent:true, direction:'bottom', offset:[0, VN_SIZE], className:'origin-label' }).openTooltip();
+  }
+
+  sizeRangeVN.addEventListener('input', e => applyVNIconSize(parseInt(e.target.value,10)));
+  minusBtnVN.addEventListener('click', () => applyVNIconSize(VN_SIZE - 2));
+  plusBtnVN.addEventListener('click',  () => applyVNIconSize(VN_SIZE + 2));
+
 
 </script>
 </body>
