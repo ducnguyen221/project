@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Dashboard (v3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<style>
+  :root {
+    --bg:#eef2f7; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --brand:#4f46e5; --brand-2:#22c55e; --brand-3:#0ea5e9; --brand-4:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+  .viewport{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:10px}
+  .board{aspect-ratio:16/9;width:min(1400px,100%);background:#f8fafc;border-radius:14px;padding:14px;display:grid;gap:12px;
+         grid-template-columns:repeat(12,1fr);grid-template-rows:60px 110px 1fr 1fr;border:1px solid var(--line)}
+  header{grid-column:1/-1;background:#334155;color:white;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+  .title{font-weight:700;letter-spacing:.2px}
+  .meta{font-size:12px;opacity:.9}
+  .kpis{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .kpi .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+  .kpi .value{font-size:26px;font-weight:700}
+  .section-title{font-weight:600;font-size:14px;margin-bottom:6px;color:#334155}
+  /* grid placement like sample */
+  #grade-card{grid-column:1 / span 6}  /* Số hv theo đánh giá */
+  #class-card{grid-column:7 / span 6}  /* Chỉ tiêu theo lớp */
+  #age-card{grid-column:1 / span 6}    /* Tổng điểm theo độ tuổi */
+  #pos-card{grid-column:7 / span 6}    /* Tỷ lệ theo vị trí */
+  #field-card{grid-column:1 / -1}      /* Bảng chuyên ngành */
+  canvas{width:100% !important;height:220px !important}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:#334155}
+  .right{text-align:right}
+  .toolbar{display:flex;gap:8px;margin-bottom:4px}
+  .btn{background:white;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}
+  .btn.active{background:#e0e7ff;border-color:#c7d2fe}
+</style>
+</head>
+<body>
+<div class="viewport">
+  <div class="board">
+    <header><div class="title">KHÓA HỌC – Student Performance Dashboard</div><div class="meta">Không cuộn • Bố cục 16:9 • Data labels</div></header>
+    <div class="kpis">
+      <div class="card kpi"><div class="label">Tổng số học viên</div><div id="kpi-stu" class="value">0</div></div>
+      <div class="card kpi"><div class="label">Tổng số khóa học</div><div id="kpi-crs" class="value">0</div></div>
+      <div class="card kpi"><div class="label">% Hoàn thành</div><div id="kpi-comp" class="value">0%</div></div>
+      <div class="card kpi"><div class="label">Điểm số bình quân</div><div id="kpi-avg" class="value">0</div></div>
+    </div>
+    <div id="grade-card" class="card">
+      <div class="section-title">Số học viên theo Đánh giá điểm</div>
+      <canvas id="chartGrade"></canvas>
+    </div>
+    <div id="class-card" class="card">
+      <div class="section-title">Phân tích chỉ tiêu theo lớp</div>
+      <div class="toolbar"><button id="btn-avg" class="btn active">Điểm Trung Bình</button><button id="btn-rate" class="btn">% Hoàn thành</button></div>
+      <canvas id="chartClass"></canvas>
+    </div>
+    <div id="age-card" class="card">
+      <div class="section-title">Tổng điểm theo độ tuổi</div>
+      <canvas id="chartAge"></canvas>
+    </div>
+    <div id="pos-card" class="card">
+      <div class="section-title">Tỷ lệ hoàn thành theo vị trí</div>
+      <canvas id="chartPos"></canvas>
+    </div>
+    <div id="field-card" class="card">
+      <div class="section-title">Kết quả theo chuyên ngành</div>
+      <table id="fieldTbl">
+        <thead><tr><th>Chuyên ngành</th><th class="right">Điểm trung bình</th><th class="right">Đạt</th><th class="right">Không đạt</th><th class="right">Tỷ lệ hoàn thành</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+Chart.register(ChartDataLabels);
+
+const DATA = {"kpis": {"total_students": 141, "total_courses": 10, "completion_rate": 0.9858156028368794, "avg_score": 83.0}, "by_grade": {"labels": ["Hạng A+", "Hạng A", "Hạng B", "Hạng C", "Hạng D"], "counts": [0, 7, 65, 25, 0]}, "by_class": {"labels": ["K01", "K02", "K03", "K04", "K05", "K06", "K07", "K08", "K09", "K10"], "avg_scores": [79.0, 83.0, 83.0, 85.0, 86.0, 84.0, 84.0, 84.0, 82.0, 80.0], "completion_rates": [94.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 90.0]}, "by_age": {"labels": ["18 - 25", "26 - 35", "36 - 45", "46 - 59", "Dưới  18"], "avg_scores": [85.0, 83.0, 85.0, 82.0, 79.0]}, "by_position": {"labels": ["Hà Nội", "United States", "Đà Nẵng", "TP. HCM"], "rates": [100.0, 100.0, 100.0, 96.0]}, "by_field": [{"Lĩnh vực": "Dịch vụ", "Điểm_BQ": 89.0, "Đạt": 6, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Hậu cần", "Điểm_BQ": 88.0, "Đạt": 7, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "CNTT", "Điểm_BQ": 86.0, "Đạt": 13, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Kế toán", "Điểm_BQ": 86.0, "Đạt": 11, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Tài chính", "Điểm_BQ": 84.0, "Đạt": 17, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Cộng đồng", "Điểm_BQ": 84.0, "Đạt": 3, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Kỹ sư", "Điểm_BQ": 83.0, "Đạt": 10, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Nhân sự", "Điểm_BQ": 82.0, "Đạt": 2, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Kinh doanh", "Điểm_BQ": 82.0, "Đạt": 39, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Giáo dục", "Điểm_BQ": 81.0, "Đạt": 16, "Không_Đạt": 2, "Tỷ_lệ": 0.8888888888888888}, {"Lĩnh vực": "Khác", "Điểm_BQ": 79.0, "Đạt": 9, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Kế Toán", "Điểm_BQ": 75.0, "Đạt": 5, "Không_Đạt": 0, "Tỷ_lệ": 1.0}, {"Lĩnh vực": "Kinh tế", "Điểm_BQ": 73.0, "Đạt": 1, "Không_Đạt": 0, "Tỷ_lệ": 1.0}]};
+const fmtInt = v => (v ?? 0).toLocaleString('vi-VN', {maximumFractionDigits:0});
+const fmtPct = v => ((v ?? 0)*100).toLocaleString('vi-VN', {maximumFractionDigits:0}) + '%';
+
+// KPIs
+document.getElementById('kpi-stu').textContent = fmtInt(DATA.kpis.total_students);
+document.getElementById('kpi-crs').textContent = fmtInt(DATA.kpis.total_courses);
+document.getElementById('kpi-comp').textContent = fmtPct(DATA.kpis.completion_rate);
+document.getElementById('kpi-avg').textContent = fmtInt(DATA.kpis.avg_score);
+
+// Grade chart
+new Chart(document.getElementById('chartGrade'), {
+  type:'bar',
+  data:{ labels: DATA.by_grade.labels, datasets:[{ label:'Số học viên', data: DATA.by_grade.counts, borderWidth:1 }] },
+  options:{
+    plugins:{ legend:{display:false}, datalabels:{ anchor:'end', align:'top', formatter:(v)=>v.toLocaleString('vi-VN'), color:'#334155', font:{weight:'600'} } },
+    scales:{ x:{ticks:{color:'#334155'}}, y:{beginAtZero:true, ticks:{color:'#334155', callback:v=>v.toLocaleString('vi-VN')}} }
+  }
+});
+
+// Class chart with toggle
+const classCtx = document.getElementById('chartClass');
+const classLabels = DATA.by_class.labels;
+const classAvg  = DATA.by_class.avg_scores;
+const classRate = DATA.by_class.completion_rates;
+let chartClass = new Chart(classCtx, {
+  type:'bar',
+  data:{ labels: classLabels, datasets:[{ label:'Điểm Trung Bình', data: classAvg, borderWidth:1 }] },
+  options:{
+    plugins:{ legend:{display:false}, datalabels:{ anchor:'end', align:'top', formatter:(v)=>v.toLocaleString('vi-VN'), color:'#334155', font:{weight:'600'} } },
+    scales:{ x:{ticks:{color:'#334155'}}, y:{beginAtZero:true, max:100, ticks:{color:'#334155'}} }
+  }
+});
+const btnAvg=document.getElementById('btn-avg'); const btnRate=document.getElementById('btn-rate');
+const setActive=(el)=>[btnAvg,btnRate].forEach(b=>b.classList.toggle('active', b===el));
+btnAvg.onclick=()=>{ setActive(btnAvg); chartClass.data.datasets[0].data = classAvg; chartClass.data.datasets[0].label='Điểm Trung Bình'; chartClass.update(); };
+btnRate.onclick=()=>{ setActive(btnRate); chartClass.data.datasets[0].data = classRate; chartClass.data.datasets[0].label='% Hoàn thành'; chartClass.update(); };
+
+// Age chart
+new Chart(document.getElementById('chartAge'), {
+  type:'bar',
+  data:{ labels: DATA.by_age.labels, datasets:[{ label:'Tổng điểm bình quân', data: DATA.by_age.avg_scores, borderWidth:1 }] },
+  options:{
+    plugins:{ legend:{display:false}, datalabels:{ anchor:'end', align:'top', formatter:(v)=>v.toLocaleString('vi-VN'), color:'#334155', font:{weight:'600'} } },
+    scales:{ x:{ticks:{color:'#334155'}}, y:{beginAtZero:true, max:100, ticks:{color:'#334155'}} }
+  }
+});
+
+// Position chart (horizontal)
+new Chart(document.getElementById('chartPos'), {
+  type:'bar',
+  data:{ labels: DATA.by_position.labels, datasets:[{ label:'% Hoàn thành', data: DATA.by_position.rates, borderWidth:1 }] },
+  options:{
+    indexAxis:'y',
+    plugins:{ legend:{display:false}, datalabels:{ anchor:'end', align:'right', formatter:(v)=>v.toLocaleString('vi-VN')+'%', color:'#334155', font:{weight:'600'} } },
+    scales:{ x:{beginAtZero:true, max:100, ticks:{color:'#334155'}}, y:{ticks:{color:'#334155'}} }
+  }
+});
+
+// Field table
+const tbody = document.querySelector('#fieldTbl tbody');
+DATA.by_field.forEach(r=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML = `<td>${r['Lĩnh vực']}</td>
+    <td class='right'>${fmtInt(r['Điểm_BQ'])}</td>
+    <td class='right'>${fmtInt(r['Đạt'])}</td>
+    <td class='right'>${fmtInt(r['Không_Đạt'])}</td>
+    <td class='right'>${((r['Tỷ_lệ']??0)*100).toLocaleString('vi-VN',{maximumFractionDigits:0})}%</td>`;
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

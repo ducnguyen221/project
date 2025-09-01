@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Báo cáo đánh giá hiệu quả khóa học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{--bg:#0b1020;--panel:#121832;--ink:#e6eef8;--sub:#8ea1bd}
+  html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .stage{position:fixed;inset:0;display:grid;place-items:center}
+  /* Slide 16:9 — we slightly shrink inner paddings and row heights to avoid clipping */
+  .slide{width:1600px;height:900px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:grid;grid-template-rows:80px 1fr;overflow:hidden}
+  .titlebar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .title h1{font-size:22px;color:var(--ink);margin:0}
+  .title .sub{color:var(--sub);font-size:12px;margin-top:3px}
+  .grid{padding:12px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:230px 230px 200px;gap:10px}
+  .card{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:12px;display:grid;grid-template-rows:40px 1fr;min-width:0;min-height:0}
+  .head{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .head .h{font-size:13px;color:#cfe0ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chartbox{position:relative;padding:6px 8px}
+  /* Fix explicit heights for canvases to ensure they never overflow card boxes */
+  #c1,#c2,#c3,#c4,#c5,#c6{height:170px !important;width:100% !important}
+  #c7{height:150px !important;width:100% !important}
+  .rowfull{grid-column:1 / span 3}
+  .legendnote{color:#cfe0ff;font-size:12px;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="slide">
+    <div class="titlebar">
+      <div class="title">
+        <h1>Báo cáo đánh giá hiệu quả khóa học</h1>
+        <div class="sub">Tổng hợp 7 chỉ tiêu trực quan — n = 38; đơn vị hiển thị: % hoặc điểm (1–5)</div>
+      </div>
+      <div class="legendnote">🔍 Tooltip hiển thị số lượng + % (làm tròn)</div>
+    </div>
+    <div class="grid">
+      <section class="card"><div class="head"><div class="h">1) Nhận thức: sau học có <i>tăng</i> không?</div></div><div class="chartbox"><canvas id="c1"></canvas></div></section>
+      <section class="card"><div class="head"><div class="h">2) Tự tin: mức độ cải thiện thế nào?</div></div><div class="chartbox"><canvas id="c2"></canvas></div></section>
+      <section class="card"><div class="head"><div class="h">3) Sẵn sàng: sẵn sàng áp dụng AI hơn?</div></div><div class="chartbox"><canvas id="c3"></canvas></div></section>
+      <section class="card"><div class="head"><div class="h">4) Điểm trung bình trước ↔ sau (3 chỉ số)</div></div><div class="chartbox"><canvas id="c4"></canvas></div></section>
+      <section class="card"><div class="head"><div class="h">5) Rào cản của nhóm chưa tự tin</div></div><div class="chartbox"><canvas id="c5"></canvas></div></section>
+      <section class="card"><div class="head"><div class="h">6) Nhóm tự tin hơn sẽ áp dụng vào đâu?</div></div><div class="chartbox"><canvas id="c6"></canvas></div></section>
+      <section class="card rowfull"><div class="head"><div class="h">7) Phân phối Δ Tự tin (sau − trước, làm tròn)</div></div><div class="chartbox"><canvas id="c7"></canvas></div></section>
+    </div>
+  </div>
+</div>
+<script>
+const D = {"summary": {"importance_change": {"labels": ["Gia tăng", "Không đổi", "Giảm sút"], "counts": [24, 8, 6], "percents": [63, 21, 16]}, "confidence_change": {"labels": ["Gia tăng", "Không đổi", "Giảm sút"], "counts": [24, 11, 3], "percents": [63, 29, 8]}, "ready_change": {"labels": ["Gia tăng", "Không đổi", "Giảm sút"], "counts": [25, 8, 5], "percents": [66, 21, 13]}, "overview": {"labels": ["Nhận thức", "Tự tin", "Sẵn sàng"], "before": [3.39, 2.68, 3.13], "after": [4.24, 3.53, 3.97], "pct_change": [25, 31, 27]}, "concerns": {"labels": ["Thiếu kỹ năng công cụ", "Lo sợ sai lệch kết quả", "Không tin tưởng dữ liệu từ AI", "Không biết cách đặt câu hỏi", "Bảo mật", "Việc đảm bảo an toàn dữ liệu"], "counts": [10, 8, 6, 4, 1, 1], "percents": [33, 27, 20, 13, 3, 3]}, "apply": {"labels": ["Tìm kiếm thông tin và kiến thức", "Viết báo cáo và tổng hợp dữ liệu", "Phân tích dữ liệu", "Tất cả các công việc"], "counts": [7, 4, 3, 1], "percents": [47, 27, 20, 7]}}, "hist": {"labels": ["-3", "-2", "-1", "+0", "+1", "+2", "+3"], "counts": [0, 0, 3, 11, 14, 9, 1]}, "n_students": 38};
+
+// Formatting helpers
+const fmtPct = v => new Intl.NumberFormat('vi-VN',{maximumFractionDigits:0}).format(v) + '%';
+const fmtNum = v => new Intl.NumberFormat('vi-VN').format(v);
+
+function donut(el, block) {
+  return new Chart(el, {
+    type:'doughnut',
+    data:{ labels:block.labels, datasets:[{ data:block.percents, borderWidth:0 }] },
+    options:{
+      plugins:{
+        legend:{ position:'bottom', labels:{ color:'#cfe0ff', boxWidth:10, boxHeight:10 } },
+        tooltip:{ callbacks:{ label:(ctx)=>`${ctx.label}: ${fmtNum(block.counts[ctx.dataIndex])} (${fmtPct(block.percents[ctx.dataIndex])})` } }
+      },
+      cutout:'55%',
+      maintainAspectRatio:false,
+    }
+  });
+}
+function groupedBar(el, labels, before, after) {
+  return new Chart(el, {
+    type:'bar',
+    data:{ labels, datasets:[
+      { label:'Trước', data:before, borderWidth:0 },
+      { label:'Sau', data:after, borderWidth:0 }
+    ]},
+    options:{
+      scales:{ x:{ ticks:{ color:'#cfe0ff' }}, y:{ beginAtZero:true, suggestedMax:5, ticks:{ color:'#cfe0ff' }}},
+      plugins:{ legend:{ labels:{ color:'#cfe0ff' }}, tooltip:{ callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${ctx.raw}` } } },
+      maintainAspectRatio:false
+    }
+  });
+}
+function hbarPercent(el, labels, percents) {
+  return new Chart(el, {
+    type:'bar',
+    data:{ labels, datasets:[{ data:percents, borderWidth:0 }] },
+    options:{
+      indexAxis:'y',
+      scales:{ x:{ beginAtZero:true, max:100, ticks:{ color:'#cfe0ff', callback:(v)=>fmtPct(v) }}, y:{ ticks:{ color:'#cfe0ff' } } },
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:(ctx)=>fmtPct(ctx.raw) } } },
+      maintainAspectRatio:false
+    }
+  });
+}
+function vbar(el, labels, counts) {
+  return new Chart(el, {
+    type:'bar',
+    data:{ labels, datasets:[{ data:counts, borderWidth:0 }] },
+    options:{
+      scales:{ x:{ ticks:{ color:'#cfe0ff' }}, y:{ beginAtZero:true, ticks:{ color:'#cfe0ff' } } },
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:(ctx)=> `${fmtNum(ctx.raw)} học viên` } } },
+      maintainAspectRatio:false
+    }
+  });
+}
+window.addEventListener('DOMContentLoaded', () => {
+  donut(document.getElementById('c1'), D.summary.importance_change);
+  donut(document.getElementById('c2'), D.summary.confidence_change);
+  donut(document.getElementById('c3'), D.summary.ready_change);
+  groupedBar(document.getElementById('c4'), D.summary.overview.labels, D.summary.overview.before, D.summary.overview.after);
+  hbarPercent(document.getElementById('c5'), D.summary.concerns.labels, D.summary.concerns.percents);
+  hbarPercent(document.getElementById('c6'), D.summary.apply.labels, D.summary.apply.percents);
+  vbar(document.getElementById('c7'), D.hist.labels, D.hist.counts);
+});
+</script>
+</body>
+</html>
